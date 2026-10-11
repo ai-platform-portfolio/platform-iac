@@ -165,11 +165,19 @@ plan; a repository merge does not provide that approval.
 
 This org enables `terraform/ci/onboarding.json`. Before each PR, main and approved apply
 plan, `terraform/scripts/discover_federation.py` reads the public org repository inventory
-and expands runner-local Terraform inputs. Every repository gets `central-apply`
-trust even without an Azure workflow; only explicitly configured infrastructure
-repositories receive planning trust. Existing explicit entries preserve their IDs
-and names. Missing/disabled configuration opts out; nothing is installed downstream.
+and expands runner-local Terraform inputs. Every discovered public repository gets `central-apply` and `central-plan` trust
+from the environment defaults in `onboarding.json`, even before it has an Azure
+workflow. The same expansion backfills planning trust for previously enrolled
+apply-only repositories. Explicit entries preserve their IDs, names and custom
+planning environments; an explicit `plan_environment: null` opts that repository
+out of planning trust. Omitting `plan_environment` from the onboarding policy
+retains apply-only discovery. Missing/disabled enrollment configuration opts out;
+nothing is installed downstream.
 Discovery is limited to public repositories, matching the org's public portfolio policy.
+Planning credentials use the existing sandbox Owner identity; this expands its
+planning trust to those repositories. Their PR workflows and planning environments
+remain repository-owned. Discovery checks the MI's 20-credential capacity after
+adding both phases and fails rather than silently skipping repositories.
 
 The authenticated webhook's optional `AUTO_ENROLL_REPOSITORIES` setting sends a
 `repository-onboarding` dispatch to this repository. That event runs a fresh plan
