@@ -1,7 +1,7 @@
 # API Management module (AI-33)
 
 Creates a Standard v2 APIM instance in an existing resource group with outbound
-VNet integration, a user-assigned managed identity and an inbound gateway private
+VNet integration, a caller-supplied shared managed identity and an inbound gateway private
 endpoint. Resource definitions remain here; app repositories supply module calls
 and environment settings. Backend APIs and model-provider policies follow later.
 
@@ -34,7 +34,8 @@ this ordered ARM property update, not shell scripts or a pipeline helper.
 
 Required inputs: `name`, `resource_group_name`, `location`, `sku_name`,
 `publisher_name`, `publisher_email`, `integration_subnet_id`,
-`private_endpoint_subnet_id`, and `private_dns_zone_id`. `tags` is optional.
+`private_endpoint_subnet_id`, `private_dns_zone_id`, and `managed_identity_id`.
+`tags` and `timeouts` are optional.
 This first version supports `StandardV2_1` through `StandardV2_10`; it does not
 pretend classic-tier VNet injection has the same networking requirements.
 
@@ -44,12 +45,12 @@ hardcoded. Backend authentication will use the managed identity; no runtime
 credential values are read from Key Vault into Terraform. Terraform state remains
 in the approved external backend.
 
-Outputs expose the ready service ID/URL, private endpoint ID and managed identity
-references. Client and principal IDs are sensitive outputs. Assign narrowly scoped
+Outputs expose the ready service ID/URL and private endpoint ID. Identity client
+and principal IDs come from the shared identity module. Assign narrowly scoped
 backend RBAC and configure policy authentication during the provider stage.
 
-Service create/update/delete timeouts are three hours because APIM operations can
-be slow. The consuming GitHub Apply job must allow at least that long too. Verify
+Service create/update/delete timeouts default to three hours because APIM
+operations can be slow; override individual operations through `timeouts`. The consuming GitHub Apply job must allow at least that long too. Verify
 regional SKU capacity before applying; UK West currently supports Standard v2.
 
 ## Validation
@@ -59,3 +60,26 @@ and `terraform test` here. Mocked tests verify private networking and identity,
 reject unsupported tiers and reject sharing the integration/endpoint subnet.
 Mock tests do not prove Azure region capacity, DNS reachability or provisioning;
 review the consumer's live plan and validate private connectivity after deployment.
+
+## Shared environment identity
+
+Create the identity alongside the environment resource group/network, then pass
+its ID to APIM and any other resources that need it. APIM does not own or delete
+that identity. Existing federated workloads retain their default behaviour.
+
+```hcl
+module "identity" {
+  source              = "../identity"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  name_prefix         = var.name_prefix
+  depends_on          = [module.network]
+  workloads = {
+    shared = { federation_enabled = false }
+  }
+}
+
+# In the environment's APIM module call:
+# managed_identity_id = module.identity.workloads["shared"].id
+# Other resource modules can receive the same identity ID.
+```

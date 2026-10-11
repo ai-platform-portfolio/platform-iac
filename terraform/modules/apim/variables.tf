@@ -70,3 +70,18 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "managed_identity_id" {
+  description = "Shared user-assigned identity owned by the environment, alongside its resource group."
+  type        = string
+}
+
+variable "timeouts" {
+  description = "APIM provisioning and private-access update timeouts; callers can override each operation."
+  type = object({
+    create = optional(string, "3h")
+    update = optional(string, "3h")
+    delete = optional(string, "3h")
+  })
+  default = {}
+}

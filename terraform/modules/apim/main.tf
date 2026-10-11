@@ -1,8 +1,16 @@
-resource "azurerm_user_assigned_identity" "this" {
-  name                = "${var.name}-identity"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
+terraform {
+  required_version = ">= 1.9, < 2.0"
+
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 4.81, < 5.0"
+    }
+    azapi = {
+      source  = "Azure/azapi"
+      version = ">= 2.13, < 3.0"
+    }
+  }
 }
 
 resource "azurerm_api_management" "this" {
@@ -21,7 +29,7 @@ resource "azurerm_api_management" "this" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.this.id]
+    identity_ids = [var.managed_identity_id]
   }
 
   public_network_access_enabled = true
@@ -33,9 +41,9 @@ resource "azurerm_api_management" "this" {
   }
 
   timeouts {
-    create = "3h"
-    update = "3h"
-    delete = "3h"
+    create = var.timeouts.create
+    update = var.timeouts.update
+    delete = var.timeouts.delete
   }
 }
 
@@ -69,8 +77,8 @@ resource "azapi_update_resource" "private_access" {
   }
 
   timeouts {
-    create = "3h"
-    update = "3h"
+    create = var.timeouts.create
+    update = var.timeouts.update
   }
 
   depends_on = [azurerm_private_endpoint.this]
