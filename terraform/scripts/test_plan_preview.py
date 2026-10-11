@@ -30,6 +30,11 @@ class PlanPreviewTest(unittest.TestCase):
         self.assertIn("<details><summary>Show plan</summary>", body)
         self.assertIn("commit `abc123`", body)
 
+    def test_empty_resource_references_do_not_corrupt_the_comment(self):
+        plan = {"storage_account_name": "", "key_vault_name": ""}
+        text = "Plan: 5 to add, 0 to change, 0 to destroy."
+        self.assertEqual(redact(text, [""], plan), text)
+
     @patch.dict(
         "os.environ",
         TF_STATE_RESOURCE_GROUP="rg",

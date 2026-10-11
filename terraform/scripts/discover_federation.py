@@ -15,6 +15,12 @@ def discover(policy, configured, fetch):
     organization = policy["organization"]
     if organization != "ai-platform-portfolio":
         raise ValueError("Automatic enrollment is scoped to ai-platform-portfolio")
+    plan_environment = policy.get("plan_environment")
+    if plan_environment is not None and (
+        not isinstance(plan_environment, str) or not plan_environment.strip()
+        or plan_environment == policy["apply_environment"]
+    ):
+        raise ValueError("Planning environment must be nonempty and distinct from apply")
     result = dict(configured)
     for page in range(1, 101):
         batch = fetch(f"orgs/{organization}/repos?type=public&per_page=100&page={page}")
@@ -24,11 +30,13 @@ def discover(policy, configured, fetch):
             if actual["owner"]["login"] != organization:
                 raise ValueError("Repository belongs to another organization")
             name = actual["name"]
-            entry = result.get(name, {
+            entry = dict(result.get(name, {
                 "owner": organization, "owner_id": str(actual["owner"]["id"]),
                 "name": name, "repository_id": str(actual["id"]),
                 "apply_environment": policy["apply_environment"],
-            })
+            }))
+            if plan_environment is not None:
+                entry.setdefault("plan_environment", plan_environment)
             validate_repository(entry, actual, planning=False)
             result[name] = entry
         if len(batch) < 100:

@@ -27,7 +27,7 @@ def redact(text, secrets, plan=None):
             for key, item in value.items():
                 if key in {"storage_account_name", "key_vault_name"} and isinstance(
                     item, str
-                ):
+                ) and item:
                     hidden.add(item)
                 visit(item)
         elif isinstance(value, list):
