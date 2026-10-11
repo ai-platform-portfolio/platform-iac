@@ -22,7 +22,8 @@ run "existing_callers_remain_unchanged" {
       length(azurerm_network_security_group.this) == 0 &&
       length(azurerm_route_table.this) == 0 &&
       length(azurerm_subnet_network_security_group_association.this) == 0 &&
-      length(azurerm_subnet_route_table_association.this) == 0
+      length(azurerm_subnet_route_table_association.this) == 0 &&
+      azurerm_subnet.this["gateway"].private_endpoint_network_policies == "Disabled"
     )
     error_message = "Existing callers must not acquire an NSG, route table or association."
   }
@@ -89,4 +90,52 @@ run "subnets_select_security_and_routing_by_key" {
     )
     error_message = "Custom next-hop and BGP propagation settings must reach the route table."
   }
+}
+
+run "private_endpoint_security_policy_is_enforced" {
+  command = plan
+  variables {
+    subnets = {
+      private_endpoints = {
+        name                              = "private-endpoints"
+        address_prefixes                  = ["10.80.4.0/24"]
+        private_endpoint_network_policies = "NetworkSecurityGroupEnabled"
+        network_security_group_key        = "private_endpoints"
+      }
+    }
+    network_security_groups = {
+      private_endpoints = {
+        name = "example-private-endpoints-nsg"
+        rules = {
+          deny_unapproved_clients = {
+            priority                   = 4096
+            direction                  = "Inbound"
+            access                     = "Deny"
+            protocol                   = "*"
+            destination_port_range     = "*"
+            source_address_prefix      = "*"
+            destination_address_prefix = "*"
+          }
+        }
+      }
+    }
+  }
+  assert {
+    condition     = azurerm_subnet.this["private_endpoints"].private_endpoint_network_policies == "NetworkSecurityGroupEnabled" && keys(azurerm_subnet_network_security_group_association.this) == ["private_endpoints"] && azurerm_network_security_rule.this["private_endpoints/deny_unapproved_clients"].access == "Deny"
+    error_message = "The private endpoint subnet must enable its selected NSG policy and attach its deny rule."
+  }
+}
+
+run "invalid_private_endpoint_policy_is_rejected" {
+  command = plan
+  variables {
+    subnets = {
+      gateway = {
+        name                              = "gateway"
+        address_prefixes                  = ["10.80.0.0/24"]
+        private_endpoint_network_policies = "Invalid"
+      }
+    }
+  }
+  expect_failures = [var.subnets]
 }
