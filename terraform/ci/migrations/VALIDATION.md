@@ -19,7 +19,7 @@ bytes were checked again; conditional writes and temporary Azure Blob leases
 protected the transfer. Both remote files matched the prepared copies exactly.
 Both leases were released. No workload resources were changed.
 
-A subsequent refreshed plan from the published `ci/` root against the new
+A subsequent refreshed plan from the published `terraform/ci/` root against the new
 Azure backend returned exit code 0 with no changes. The legacy state retains
 nine managed instances, four data sources and compatibility output snapshots.
 The decommissioned root must not be applied again with its old network declarations.

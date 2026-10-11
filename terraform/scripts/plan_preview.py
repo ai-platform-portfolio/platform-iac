@@ -129,7 +129,7 @@ def preview(saved):
         ),
     ]:
         result = subprocess.run(
-            ["tofu", "-chdir=ci", *args], capture_output=True, text=True
+            ["tofu", "-chdir=terraform/ci", *args], capture_output=True, text=True
         )
         if result.returncode:
             codes = sorted(set(re.findall(r"AADSTS\d+", result.stdout + result.stderr)))
@@ -139,11 +139,11 @@ def preview(saved):
                 f"OpenTofu {stage} failed ({detail}). No successful plan was produced.\nRaw diagnostics are withheld to avoid publishing credentials or resource identifiers.",
             )
     output = subprocess.check_output(
-        ["tofu", "-chdir=ci", "show", "-no-color", str(saved)], text=True
+        ["tofu", "-chdir=terraform/ci", "show", "-no-color", str(saved)], text=True
     )
     plan = json.loads(
         subprocess.check_output(
-            ["tofu", "-chdir=ci", "show", "-json", str(saved)], text=True
+            ["tofu", "-chdir=terraform/ci", "show", "-json", str(saved)], text=True
         )
     )
     secrets = [

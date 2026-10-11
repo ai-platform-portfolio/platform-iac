@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--expected")
     args = parser.parse_args()
     result = subprocess.run(
-        ["terraform", "-chdir=ci", "show", "-json", str(args.plan.resolve())],
+        ["terraform", "-chdir=terraform/ci", "show", "-json", str(args.plan.resolve())],
         check=True, capture_output=True, text=True,
     )
     plan = json.loads(result.stdout)

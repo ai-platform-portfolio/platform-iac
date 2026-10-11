@@ -62,7 +62,7 @@ private endpoints.
 
 ```hcl
 module "aca" {
-  source = "git::https://github.com/ai-platform-portfolio/terraform-modules.git//modules/aca?ref=<full-commit-sha>"
+  source = "git::https://github.com/ai-platform-portfolio/terraform-modules.git//terraform/modules/aca?ref=<full-commit-sha>"
 
   resource_group_name = azurerm_resource_group.app.name
   location            = "uksouth"
@@ -92,7 +92,7 @@ trigger sizing — everything else is identical:
 
 ```hcl
 module "aca" {
-  source = "git::https://github.com/ai-platform-portfolio/terraform-modules.git//modules/aca?ref=<full-commit-sha>"
+  source = "git::https://github.com/ai-platform-portfolio/terraform-modules.git//terraform/modules/aca?ref=<full-commit-sha>"
 
   workload_kind = "job"
   # ...same resource_group_name / location / name_prefix / loc_short,

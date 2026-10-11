@@ -41,9 +41,9 @@ def discover(policy, configured, fetch):
 
 
 def main():
-    path = Path("ci/github.auto.tfvars.json")
+    path = Path("terraform/ci/github.auto.tfvars.json")
     configured = json.loads(path.read_text())["github_repositories"]
-    policy_path = Path("ci/onboarding.json")
+    policy_path = Path("terraform/ci/onboarding.json")
     policy = json.loads(policy_path.read_text()) if policy_path.exists() else {}
     resolved = discover(policy, configured, lambda endpoint: json.loads(
         subprocess.check_output(["gh", "api", endpoint], text=True)))

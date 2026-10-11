@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'ci/**'
-      - 'modules/**'
-      - 'scripts/deployment_plan.py'
-      - 'scripts/federation_contract.py'
-      - 'scripts/discover_federation.py'
+      - 'terraform/ci/**'
+      - 'terraform/modules/**'
+      - 'terraform/scripts/deployment_plan.py'
+      - 'terraform/scripts/federation_contract.py'
+      - 'terraform/scripts/discover_federation.py'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
   repository_dispatch:
@@ -72,17 +72,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python3 scripts/discover_federation.py
-          python3 scripts/federation_contract.py
+          python3 terraform/scripts/discover_federation.py
+          python3 terraform/scripts/federation_contract.py
       - run: >-
-          terraform -chdir=ci init -input=false -lockfile=readonly -backend-config=backend.hcl
+          terraform -chdir=terraform/ci init -input=false -lockfile=readonly -backend-config=backend.hcl
           -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP"
           -backend-config="storage_account_name=$TF_STATE_STORAGE_ACCOUNT"
           -backend-config="container_name=$TF_STATE_CONTAINER"
       - name: Plan central infrastructure
-        run: terraform -chdir=ci plan -input=false -lock-timeout=5m -out="$RUNNER_TEMP/review.tfplan"
+        run: terraform -chdir=terraform/ci plan -input=false -lock-timeout=5m -out="$RUNNER_TEMP/review.tfplan"
       - id: review
-        run: python3 scripts/deployment_plan.py "$RUNNER_TEMP/review.tfplan"
+        run: python3 terraform/scripts/deployment_plan.py "$RUNNER_TEMP/review.tfplan"
       - name: Publish the reviewed plan
         if: steps.review.outputs.changes == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -119,7 +119,7 @@ jobs:
           terraform_version: 1.12.2
           terraform_wrapper: false
       - run: >-
-          terraform -chdir=ci init -input=false -lockfile=readonly -backend-config=backend.hcl
+          terraform -chdir=terraform/ci init -input=false -lockfile=readonly -backend-config=backend.hcl
           -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP"
           -backend-config="storage_account_name=$TF_STATE_STORAGE_ACCOUNT"
           -backend-config="container_name=$TF_STATE_CONTAINER"
@@ -129,7 +129,7 @@ jobs:
           name: central-infrastructure-plan
           path: ${{ runner.temp }}
       - name: Apply the reviewed plan
-        run: terraform -chdir=ci apply -input=false -lock-timeout=5m "$RUNNER_TEMP/review.tfplan"
+        run: terraform -chdir=terraform/ci apply -input=false -lock-timeout=5m "$RUNNER_TEMP/review.tfplan"
       - name: Remove local plan
         if: always()
         run: rm -f "$RUNNER_TEMP/review.tfplan"
