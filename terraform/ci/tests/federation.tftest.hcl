@@ -24,8 +24,8 @@ run "github_subject_matches_observed_repository_claim" {
 
   assert {
     condition = local.github_subjects == {
-      ops-shared-plan         = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-plan"
-      ops-shared-apply        = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-apply"
+      ops-shared-plan    = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-plan"
+      ops-shared-apply   = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-apply"
       platform-iac-plan  = "repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-plan"
       platform-iac-apply = "repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-apply"
     }
