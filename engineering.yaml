@@ -4,6 +4,12 @@ terraform:
   profile: module
   approved_repositories: [ai-platform-portfolio/platform-iac]
   collections:
+    - files: terraform/modules/azure/foundry/*
+      type: azurerm_cognitive_account_project
+      expression: var.projects
+    - files: terraform/modules/azure/foundry/*
+      type: azurerm_cognitive_deployment
+      expression: var.deployments
     - files: terraform/modules/azure/network/*
       type: azurerm_subnet
       expression: var.subnets
