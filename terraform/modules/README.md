@@ -35,6 +35,7 @@ and real private endpoints).
 | Module | Purpose |
 |--------|---------|
 | `azure/network` | Shared VNet, map-driven subnets, optional NSGs and route tables, private DNS zones with VNet links |
+| `azure/foundry` | Private AIServices account, shared identity RBAC and map-driven regional model deployments |
 | `azure/apim` | Standard v2 gateway with outbound VNet integration, managed identity and inbound Private Link |
 | `auth0/configuration` | Auth0 resource servers (APIs), clients (incl. M2M), grants, KV secret sync |
 | `azure/identity` | User-assigned managed identities + OIDC federation for workloads |
