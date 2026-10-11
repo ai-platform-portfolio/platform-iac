@@ -15,17 +15,7 @@ variable "oidc_issuer_url" {
   }
 }
 
-# v0.2.0: workloads are fully caller-defined. The module no longer hardcodes
-# any solution-specific workload names, namespaces or service accounts.
-#
-# Each entry creates a user-assigned managed identity. Federation defaults
-# to enabled; shared Azure resource identities can disable it. The map key is a stable
-# logical handle used to build the UAMI name and to look up outputs.
-#
-# extra_federated_subjects lets one UAMI be federated to ADDITIONAL
-# ServiceAccount subjects (the generalised form of the old KEDA-operator
-# special case): map of arbitrary label => full "system:serviceaccount:NS:SA"
-# subject string.
+# Caller-defined identities; disable federation for shared Azure resources.
 variable "workloads" {
   description = "Map of identities with optional OIDC federation. Set federation_enabled = false for a shared Azure resource identity."
   type = map(object({
