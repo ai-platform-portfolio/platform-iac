@@ -60,6 +60,8 @@ resource "azurerm_cognitive_account_project" "this" {
 }
 
 resource "azurerm_private_endpoint" "this" {
+  depends_on = [azurerm_cognitive_account_project.this, azurerm_cognitive_deployment.this]
+
   name                = "${var.name}-pe"
   resource_group_name = var.resource_group_name
   location            = var.private_endpoint_location
@@ -80,6 +82,8 @@ resource "azurerm_private_endpoint" "this" {
 }
 
 resource "azurerm_cognitive_deployment" "this" {
+  depends_on = [azurerm_cognitive_account_project.this]
+
   for_each               = var.deployments
   name                   = each.key
   cognitive_account_id   = azurerm_cognitive_account.this.id
