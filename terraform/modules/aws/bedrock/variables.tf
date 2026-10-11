@@ -50,6 +50,14 @@ variable "profiles" {
     condition     = alltrue([for profile in var.profiles : anytrue([for prefix in var.allowed_profile_prefixes : startswith(profile.source_profile_id, prefix)]) && !startswith(profile.source_profile_id, "global.")])
     error_message = "Only explicitly approved geographic profile prefixes are allowed; global profiles are prohibited."
   }
+  validation {
+    condition     = alltrue([for profile in var.profiles : profile.description == null ? true : length(profile.description) <= 200 && can(regex("^([0-9a-zA-Z:.][ _-]?)+$", profile.description))])
+    error_message = "Profile descriptions must be 1-200 characters and match Bedrock's alphanumeric, colon, period and single-separator format; slashes are prohibited."
+  }
+  validation {
+    condition     = alltrue([for alias in keys(var.profiles) : length("${var.name}-${alias}") <= 64 && can(regex("^([0-9a-zA-Z][ _-]?)+$", "${var.name}-${alias}"))])
+    error_message = "Generated profile names must be 1-64 characters and use Bedrock's alphanumeric and single-separator format."
+  }
 }
 
 variable "allowed_profile_prefixes" {

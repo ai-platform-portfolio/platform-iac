@@ -67,6 +67,22 @@ run "public_wildcard_ingress_is_rejected" {
   expect_failures = [var.allowed_client_cidrs]
 }
 
+run "invalid_description_is_rejected_before_apply" {
+  command = plan
+  variables {
+    profiles = { claude = { source_profile_id = "eu.example", description = "UK/EU processing" } }
+  }
+  expect_failures = [var.profiles]
+}
+
+run "invalid_generated_name_is_rejected_before_apply" {
+  command = plan
+  variables {
+    profiles = { "claude.v1" = { source_profile_id = "eu.example" } }
+  }
+  expect_failures = [var.profiles]
+}
+
 run "federated_policy_is_scoped_to_role_and_models" {
   command = apply
   variables {
