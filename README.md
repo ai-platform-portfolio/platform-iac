@@ -8,7 +8,11 @@ explicit exception for centrally operated infrastructure. See [modules](terrafor
 
 ```text
 terraform/
-  modules/       Reusable infrastructure modules
+  modules/
+    azure/       Azure infrastructure modules
+    aws/         AWS modules
+    gcp/         GCP modules
+    auth0/       Auth0 configuration modules
   examples/      Module usage examples
   ci/            Centrally operated infrastructure
   scripts/       Terraform validation and deployment tooling
@@ -23,7 +27,7 @@ root. See [Helm](helm/README.md) for the chart layout.
 
 ## Terraform
 
-Consumers use `git::https://github.com/ai-platform-portfolio/platform-iac.git//terraform/modules/<name>?ref=<full-commit-sha>`.
+Consumers use `git::https://github.com/ai-platform-portfolio/platform-iac.git//terraform/modules/<provider>/<name>?ref=<full-commit-sha>`.
 Upgrade the pinned commit in a reviewed consumer change. Private repository
 authentication must be available to the caller; no token belongs in a source URL.
 
@@ -37,7 +41,7 @@ Migrating existing addresses requires explicit moved blocks and a reviewed plan.
 The network migration preserves existing Azure resources and address allocations.
 
 The directory move changes module source URLs for new revisions: replace
-`//modules/<name>` with `//terraform/modules/<name>` when upgrading the pinned
+`//terraform/modules/<name>` with `//terraform/modules/<provider>/<name>` when upgrading the pinned
 commit. Existing consumers pinned to older commits continue using their original
 paths. The central deployment root is now `terraform/ci`; resource addresses and
 backend configuration are unchanged. Run Makefile commands from the repo root.

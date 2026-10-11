@@ -2,7 +2,7 @@
 
 ## Organisation profile sync (AI-5)
 
-`functions.tf` calls `terraform/modules/function-app` using the map in
+`functions.tf` calls `terraform/modules/azure/function-app` using the map in
 `functions.auto.tfvars.json`. The profile worker uses the existing Functions
 subnet and public HTTPS ingress for signed GitHub webhooks. Existing vault and
 storage network policies are unchanged. The runtime identity has access to its

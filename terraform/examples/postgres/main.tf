@@ -20,7 +20,7 @@ locals {
 }
 
 module "postgres" {
-  source = "../../modules/postgres"
+  source = "../../modules/azure/postgres"
 
   resource_group_name = "example-rg"
   location            = "eastus"

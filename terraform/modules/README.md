@@ -1,6 +1,6 @@
 # Shared Terraform modules
 
-Reusable Azure building-block modules for the `ai-platform-portfolio` repos. These
+Reusable provider-organized infrastructure modules for the `ai-platform-portfolio` repos. These
 are the **single source of truth** — consuming repos reference them via a
 git-subdirectory source pinned to a full commit SHA, rather than copying modules per repo
 (centralise-don't-copy).
@@ -9,7 +9,7 @@ git-subdirectory source pinned to a full commit SHA, rather than copying modules
 
 ```hcl
 module "postgres" {
-  source = "git::https://github.com/ai-platform-portfolio/platform-iac.git//terraform/modules/postgres?ref=<full-commit-sha>"
+  source = "git::https://github.com/ai-platform-portfolio/platform-iac.git//terraform/modules/azure/postgres?ref=<full-commit-sha>"
 
   # v0.2.0: solution-specific values are REQUIRED inputs, not module defaults.
   database_name     = "myapp"
@@ -34,13 +34,13 @@ and real private endpoints).
 
 | Module | Purpose |
 |--------|---------|
-| `network` | Shared VNet, map-driven subnets, optional NSGs and route tables, private DNS zones with VNet links |
-| `apim` | Standard v2 gateway with outbound VNet integration, managed identity and inbound Private Link |
-| `auth0` | Auth0 resource servers (APIs), clients (incl. M2M), grants, KV secret sync |
-| `identity` | User-assigned managed identities + OIDC federation for workloads |
-| `storage` | Storage account + role assignments for workload principals |
-| `postgres` | Postgres flexible server (+ replica) with Entra admin registration |
-| `aca` | Azure Container Apps + Environment — a Container **App** or a run-to-completion **Job** (`workload_kind`); VNet-integrated, internal-only, KV secrets + ACR pull via a user-assigned identity |
+| `azure/network` | Shared VNet, map-driven subnets, optional NSGs and route tables, private DNS zones with VNet links |
+| `azure/apim` | Standard v2 gateway with outbound VNet integration, managed identity and inbound Private Link |
+| `auth0/configuration` | Auth0 resource servers (APIs), clients (incl. M2M), grants, KV secret sync |
+| `azure/identity` | User-assigned managed identities + OIDC federation for workloads |
+| `azure/storage` | Storage account + role assignments for workload principals |
+| `azure/postgres` | Postgres flexible server (+ replica) with Entra admin registration |
+| `azure/aca` | Azure Container Apps + Environment — a Container **App** or a run-to-completion **Job** (`workload_kind`); VNet-integrated, internal-only, KV secrets + ACR pull via a user-assigned identity |
 
 ## Versioning
 
@@ -55,3 +55,14 @@ versions. Before upgrading a consumer, replace calls to these removed paths
 and review its state migration; deleting module source does not destroy Azure
 resources. The central network and its existing OpenAI private DNS zone remain
 owned by `terraform/ci`.
+
+## Provider directories (AI-44)
+
+Modules live under `azure/`, `aws/`, `gcp/`, or `auth0/`. AWS and GCP directories
+are reserved for the upcoming AI platform modules; they contain no implementations
+yet. Auth0's existing multi-resource configuration module is `auth0/configuration`.
+
+When upgrading, change the source subdirectory and pinned commit together.
+Existing consumers pinned to old commits continue using their original paths.
+Module call names and resource addresses do not change, so no moved blocks or
+state migration are needed for this directory reorganization.

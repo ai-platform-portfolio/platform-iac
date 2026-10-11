@@ -21,7 +21,7 @@ locals {
 }
 
 module "aca" {
-  source = "../../modules/aca"
+  source = "../../modules/azure/aca"
 
   resource_group_name = "example-rg"
   location            = "uksouth"
@@ -51,7 +51,7 @@ module "aca" {
 # and exits) with a manual on-demand trigger — the correct primitive when there
 # is no long-running server to keep alive.
 module "aca_job" {
-  source = "../../modules/aca"
+  source = "../../modules/azure/aca"
 
   workload_kind = "job"
 

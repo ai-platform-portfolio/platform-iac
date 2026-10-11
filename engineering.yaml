@@ -4,22 +4,22 @@ terraform:
   profile: module
   approved_repositories: [ai-platform-portfolio/platform-iac]
   collections:
-    - files: terraform/modules/network/*
+    - files: terraform/modules/azure/network/*
       type: azurerm_subnet
       expression: var.subnets
-    - files: terraform/modules/network/*
+    - files: terraform/modules/azure/network/*
       type: azurerm_private_dns_zone
       expression: var.private_dns_zones
-    - files: terraform/modules/network/*
+    - files: terraform/modules/azure/network/*
       type: azurerm_private_dns_zone_virtual_network_link
       expression: var.private_dns_zones
-    - files: terraform/modules/identity/*
+    - files: terraform/modules/azure/identity/*
       type: azurerm_user_assigned_identity
       expression: var.workloads
-    - files: terraform/modules/storage/*
+    - files: terraform/modules/azure/storage/*
       type: azurerm_storage_container
       expression: var.containers
-    - files: terraform/modules/storage/*
+    - files: terraform/modules/azure/storage/*
       type: azurerm_role_assignment
       expression: var.role_assignments
 comments:

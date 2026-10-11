@@ -14,7 +14,7 @@ provider "azurerm" {
 }
 
 module "identity" {
-  source = "../../modules/identity"
+  source = "../../modules/azure/identity"
 
   resource_group_name = "example-rg"
   location            = "eastus"
