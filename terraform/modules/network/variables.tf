@@ -5,15 +5,23 @@ variable "address_space" { type = list(string) }
 
 variable "subnets" {
   type = map(object({
-    name                       = string
-    address_prefixes           = list(string)
-    network_security_group_key = optional(string)
-    route_table_key            = optional(string)
+    name                              = string
+    address_prefixes                  = list(string)
+    network_security_group_key        = optional(string)
+    route_table_key                   = optional(string)
+    private_endpoint_network_policies = optional(string, "Disabled")
     delegations = optional(map(object({
       service = string
       actions = list(string)
     })), {})
   }))
+
+  validation {
+    condition = alltrue([
+      for subnet in values(var.subnets) : contains(["Disabled", "Enabled", "NetworkSecurityGroupEnabled", "RouteTableEnabled"], subnet.private_endpoint_network_policies)
+    ])
+    error_message = "Private endpoint network policies must be Disabled, Enabled, NetworkSecurityGroupEnabled or RouteTableEnabled."
+  }
 }
 
 variable "private_dns_zones" { type = map(string) }

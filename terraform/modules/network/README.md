@@ -59,3 +59,11 @@ connectivity.
 `subnet_ids` depends on the selected associations and their rules/routes. Workload
 modules consuming this output therefore wait until subnet configuration is ready.
 `network_security_group_ids` and `route_table_ids` expose references for later wiring.
+
+Private endpoint subnet policy is configurable through each subnet's
+`private_endpoint_network_policies`. It defaults to `Disabled` to preserve
+existing deployments. Use `NetworkSecurityGroupEnabled` to enforce the selected
+NSG on private endpoints, `RouteTableEnabled` for UDR policy, or `Enabled` for
+both. NSG attachment alone does not enforce rules on a PE while policy is disabled.
+
+[Microsoft private endpoint network policies](https://learn.microsoft.com/en-us/azure/private-link/disable-private-endpoint-network-policy)
