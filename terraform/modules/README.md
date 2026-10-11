@@ -28,7 +28,7 @@ module definition lives here. See `../examples/` for full neutral-value
 invocations of each changed module, and `../PROVENANCE.md` for the v0.2.0
 breaking interface changes (required `database_name`, map-based identity
 `workloads`, parameterised storage containers/roles/lifecycle, the
-`openai_user_principal_ids` set, and real private endpoints).
+and real private endpoints).
 
 ## Modules
 
@@ -39,11 +39,18 @@ breaking interface changes (required `database_name`, map-based identity
 | `identity` | User-assigned managed identities + OIDC federation for workloads |
 | `storage` | Storage account + role assignments for workload principals |
 | `postgres` | Postgres flexible server (+ replica) with Entra admin registration |
-| `openai` | Azure OpenAI account + model deployments + role assignments |
-| `aks-nodepool` | Spot user node pool attached to a shared AKS cluster |
 | `aca` | Azure Container Apps + Environment — a Container **App** or a run-to-completion **Job** (`workload_kind`); VNet-integrated, internal-only, KV secrets + ACR pull via a user-assigned identity |
 
 ## Versioning
 
 Tag releases as `tf-modules-vX.Y.Z`. Consumers pin to a full commit SHA; bump the pin
 deliberately. Modules are parameterised — no identifying values are hardcoded.
+
+## Removed modules (AI-36)
+
+The legacy `openai` and `aks-nodepool` modules and the OpenAI example have been
+removed. Existing consumers pinned to earlier commits continue to use those
+versions. Before upgrading a consumer, replace calls to these removed paths
+and review its state migration; deleting module source does not destroy Azure
+resources. The central network and its existing OpenAI private DNS zone remain
+owned by `terraform/ci`.
