@@ -8,3 +8,9 @@ The Plan role reads infrastructure metadata. Apply manages tagged workload resou
 and runtime roles under the workload IAM path. It cannot edit its own deployment
 roles or remove the runtime permissions boundary. Exact OIDC subjects and account
 metadata are supplied externally, never committed in tfvars.
+
+`network` creates the private VPC/subnets. `bedrock` adds map-defined application
+inference profiles and private Runtime/STS endpoints. Profiles are checked against
+explicit processing regions, and endpoint policies deny all access until exact
+runtime role references are supplied externally. Transport and federation are
+separate dependencies.

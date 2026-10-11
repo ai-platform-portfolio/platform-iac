@@ -81,9 +81,26 @@ variable "iam_read_actions" {
 }
 
 variable "ec2_create_actions" {
-  description = "Tagged network resources Apply may create."
+  description = "Create actions mapped to the newly tagged EC2 resource type they authorize."
+  type        = map(string)
+  default = {
+    "ec2:CreateVpc"           = "vpc"
+    "ec2:CreateSubnet"        = "subnet"
+    "ec2:CreateSecurityGroup" = "security-group"
+    "ec2:CreateVpcEndpoint"   = "vpc-endpoint"
+  }
+}
+
+variable "ec2_dependency_create_actions" {
+  description = "Create operations that also authorize existing owned network dependencies."
   type        = set(string)
-  default     = ["ec2:CreateVpc", "ec2:CreateSubnet", "ec2:CreateSecurityGroup", "ec2:CreateVpcEndpoint"]
+  default     = ["ec2:CreateSubnet", "ec2:CreateSecurityGroup", "ec2:CreateVpcEndpoint"]
+}
+
+variable "ec2_dependency_resource_types" {
+  description = "Existing network resource types usable only when bearing the workload tag."
+  type        = set(string)
+  default     = ["vpc", "subnet", "security-group"]
 }
 
 variable "ec2_create_actions_names" {

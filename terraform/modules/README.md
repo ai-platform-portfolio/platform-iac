@@ -59,9 +59,9 @@ owned by `terraform/ci`.
 
 ## Provider directories (AI-44)
 
-Modules live under `azure/`, `aws/`, `gcp/`, or `auth0/`. AWS and GCP directories
-are reserved for the upcoming AI platform modules; they contain no implementations
-yet. Auth0's existing multi-resource configuration module is `auth0/configuration`.
+Modules live under `azure/`, `aws/`, `gcp/`, or `auth0/`. AWS includes deployment
+identity, private network and Bedrock foundation modules. GCP is reserved for the
+upcoming AI platform stage. Auth0's configuration module is `auth0/configuration`.
 
 When upgrading, change the source subdirectory and pinned commit together.
 Existing consumers pinned to old commits continue using their original paths.
