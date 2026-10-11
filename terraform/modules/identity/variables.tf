@@ -5,22 +5,21 @@ variable "loc_short" {
   type    = string
   default = ""
 }
-variable "oidc_issuer_url" { type = string }
+variable "oidc_issuer_url" {
+  type    = string
+  default = null
 
-# v0.2.0: workloads are fully caller-defined. The module no longer hardcodes
-# any solution-specific workload names, namespaces or service accounts.
-#
-# Each entry creates a user-assigned managed identity federated to a
-# Kubernetes ServiceAccount (namespace + sa_name). The map key is a stable
-# logical handle used to build the UAMI name and to look up outputs.
-#
-# extra_federated_subjects lets one UAMI be federated to ADDITIONAL
-# ServiceAccount subjects (the generalised form of the old KEDA-operator
-# special case): map of arbitrary label => full "system:serviceaccount:NS:SA"
-# subject string.
+  validation {
+    condition     = !anytrue([for workload in values(var.workloads) : workload.federation_enabled]) || try(trimspace(var.oidc_issuer_url) != "", false)
+    error_message = "An OIDC issuer is required when any workload enables federation."
+  }
+}
+
+# Caller-defined identities; disable federation for shared Azure resources.
 variable "workloads" {
-  description = "Map of workloads to provision UAMIs + OIDC federation for. Neutral default {} — caller supplies all names/namespaces."
+  description = "Map of identities with optional OIDC federation. Set federation_enabled = false for a shared Azure resource identity."
   type = map(object({
+    federation_enabled       = optional(bool, true)
     namespace                = optional(string)
     sa_name                  = optional(string)
     federated_subject        = optional(string)
@@ -30,11 +29,11 @@ variable "workloads" {
 
   validation {
     condition = alltrue([
-      for workload in values(var.workloads) : workload.federated_subject != null ?
+      for workload in values(var.workloads) : !workload.federation_enabled ? true : workload.federated_subject != null ?
       trimspace(workload.federated_subject) != "" :
       try(trimspace(workload.namespace) != "" && trimspace(workload.sa_name) != "", false)
     ])
-    error_message = "Each workload needs a federated_subject or both namespace and sa_name."
+    error_message = "Each federated workload needs a federated_subject or both namespace and sa_name."
   }
 }
 

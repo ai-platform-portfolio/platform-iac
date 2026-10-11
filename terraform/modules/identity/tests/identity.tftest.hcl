@@ -85,3 +85,15 @@ run "map_based_workloads_and_extra_federation" {
     error_message = "extra federation subject must be passed through verbatim"
   }
 }
+
+run "shared_identity_without_federation" {
+  command = plan
+  variables {
+    oidc_issuer_url = null
+    workloads       = { shared = { federation_enabled = false } }
+  }
+  assert {
+    condition     = length(azurerm_user_assigned_identity.this) == 1 && length(azurerm_federated_identity_credential.this) == 0 && length(azurerm_federated_identity_credential.extra) == 0
+    error_message = "Shared Azure identities must not require an issuer or create federation credentials."
+  }
+}

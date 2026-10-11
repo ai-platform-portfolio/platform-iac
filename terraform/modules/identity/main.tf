@@ -24,7 +24,7 @@ locals {
         workload = k
         subject  = subject
       }
-    }
+    } if w.federation_enabled
   ]...)
 }
 
@@ -45,7 +45,7 @@ resource "azurerm_user_assigned_identity" "this" {
 }
 
 resource "azurerm_federated_identity_credential" "this" {
-  for_each  = var.workloads
+  for_each  = { for key, workload in var.workloads : key => workload if workload.federation_enabled }
   name      = "${local.workload_names[each.key]}-fed"
   parent_id = azurerm_user_assigned_identity.this[each.key].id
 
