@@ -9,12 +9,12 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parent.parent
     subprocess.run(["terraform", "fmt", "-check", "-recursive"], cwd=root, check=True)
-    directories = sorted(
-        path
+    directories = sorted({
+        path.parent
         for parent in ("modules", "examples")
-        for path in (root / parent).iterdir()
-        if path.is_dir()
-    )
+        for path in (root / parent).rglob("*.tf")
+        if ".terraform" not in path.parts and "tests" not in path.parts
+    })
     directories.append(root / "ci")
     failures = []
     for directory in directories:

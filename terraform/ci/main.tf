@@ -1,5 +1,5 @@
 module "network" {
-  source = "../modules/network"
+  source = "../modules/azure/network"
 
   resource_group_name = var.network.resource_group_name
   location            = var.network.location
@@ -23,7 +23,7 @@ locals {
 }
 
 module "deployment_identity" {
-  source = "../modules/identity"
+  source = "../modules/azure/identity"
 
   create_resource_group = true
   resource_group_name   = var.deployment_identity.resource_group_name

@@ -5,7 +5,7 @@ data "azurerm_storage_account" "functions" {
 
 module "functions" {
   for_each = var.function_apps
-  source   = "../modules/function-app"
+  source   = "../modules/azure/function-app"
 
   name                = each.value.name
   resource_group_name = var.deployment_identity.resource_group_name

@@ -176,11 +176,7 @@ resource "azurerm_container_app" "this" {
 }
 
 # --- Container App Job (workload_kind = "job") -----------------------------
-# The right primitive for an episodic/batch run-to-completion workload: the
-# container runs the task once and exits (a scale-to-zero App with no ingress
-# would deploy but never wake). Manual (on-demand) trigger — the operator starts
-# an execution when needed. Shares the environment + identity + registry +
-# secret + env wiring with the app path above.
+# Runs batch workloads on demand using the shared environment and identity.
 resource "azurerm_container_app_job" "this" {
   count = local.is_job ? 1 : 0
 

@@ -20,6 +20,6 @@ Terraform 1.12.2. All 13 supplied mocked plan tests passed. Provider selections
 are recorded in validation lock files; no live infrastructure was contacted.
 
 The shared network from `terraform/network.tf` at the same source revision is
-now represented by `terraform/modules/network` and composed in `terraform/ci/`. Its subnet and DNS
+now represented by `terraform/modules/azure/network` and composed in `terraform/ci/`. Its subnet and DNS
 resources use maps; existing names and allocations are preserved in `terraform/ci/terraform.tfvars`.
 See [central infrastructure](ci/README.md) for the separate state-ownership migration and approval gates.

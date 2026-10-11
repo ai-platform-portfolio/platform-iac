@@ -19,7 +19,7 @@ locals {
 }
 
 module "storage" {
-  source = "../../modules/storage"
+  source = "../../modules/azure/storage"
 
   resource_group_name = "example-rg"
   location            = "eastus"
