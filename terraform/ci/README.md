@@ -150,8 +150,8 @@ restricted permissions; saved Terraform plans and state still contain these valu
 The federated subjects must be:
 
 ```
-repo:ai-platform-portfolio@334196300/terraform-modules@1389557192:environment:central-plan
-repo:ai-platform-portfolio@334196300/terraform-modules@1389557192:environment:central-apply
+repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-plan
+repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-apply
 ```
 
 Issuer: `https://token.actions.githubusercontent.com`; audience:

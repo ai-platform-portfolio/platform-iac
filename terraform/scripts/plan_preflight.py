@@ -41,7 +41,7 @@ def read_json(command):
 def main():
     repo = json.loads(Path("terraform/ci/github.auto.tfvars.json").read_text())[
         "github_repositories"
-    ]["terraform-modules"]
+    ]["platform-iac"]
     try:
         environment = read_json(
             [

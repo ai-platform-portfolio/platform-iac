@@ -1,4 +1,4 @@
-# Platform components
+# Platform IaC
 
 Reusable Terraform modules and centralised Helm charts for `ai-platform-portfolio`. The [ci](terraform/ci/README.md) root is the
 explicit exception for centrally operated infrastructure. See [modules](terraform/modules/README.md) and
@@ -23,7 +23,7 @@ root. See [Helm](helm/README.md) for the chart layout.
 
 ## Terraform
 
-Consumers use `git::https://github.com/ai-platform-portfolio/terraform-modules.git//terraform/modules/<name>?ref=<full-commit-sha>`.
+Consumers use `git::https://github.com/ai-platform-portfolio/platform-iac.git//terraform/modules/<name>?ref=<full-commit-sha>`.
 Upgrade the pinned commit in a reviewed consumer change. Private repository
 authentication must be available to the caller; no token belongs in a source URL.
 

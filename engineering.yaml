@@ -2,7 +2,7 @@ version: 1
 terraform:
   roots: [terraform/modules, terraform/ci]
   profile: module
-  approved_repositories: [ai-platform-portfolio/terraform-modules]
+  approved_repositories: [ai-platform-portfolio/platform-iac]
   collections:
     - files: terraform/modules/network/*
       type: azurerm_subnet

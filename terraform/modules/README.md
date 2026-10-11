@@ -9,7 +9,7 @@ git-subdirectory source pinned to a full commit SHA, rather than copying modules
 
 ```hcl
 module "postgres" {
-  source = "git::https://github.com/ai-platform-portfolio/terraform-modules.git//terraform/modules/postgres?ref=<full-commit-sha>"
+  source = "git::https://github.com/ai-platform-portfolio/platform-iac.git//terraform/modules/postgres?ref=<full-commit-sha>"
 
   # v0.2.0: solution-specific values are REQUIRED inputs, not module defaults.
   database_name     = "myapp"
