@@ -41,3 +41,9 @@ The directory move changes module source URLs for new revisions: replace
 commit. Existing consumers pinned to older commits continue using their original
 paths. The central deployment root is now `terraform/ci`; resource addresses and
 backend configuration are unchanged. Run Makefile commands from the repo root.
+
+The structure check validates the candidate `engineering.yaml`, allowing directory
+migrations to update policy paths in the same PR. GitHub repository rules govern
+required reviews; the checker does not impose an additional owner-approval gate.
+Protected changes remain visible in the quality report and job summary. All
+structural findings and checker errors still fail CI.

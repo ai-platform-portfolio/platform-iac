@@ -43,7 +43,7 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
           PR: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ github.token }}
-        run: '"$CHECKER" --base "$BASE" --github-pr "$PR" --tools "$TOOLS" --report reports/quality.json'
+        run: python3 terraform/scripts/structure_check.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
