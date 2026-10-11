@@ -2,7 +2,7 @@
 
 ## Organisation profile sync (AI-5)
 
-`functions.tf` calls `modules/function-app` using the map in
+`functions.tf` calls `terraform/modules/function-app` using the map in
 `functions.auto.tfvars.json`. The profile worker uses the existing Functions
 subnet and public HTTPS ingress for signed GitHub webhooks. Existing vault and
 storage network policies are unchanged. The runtime identity has access to its
@@ -34,8 +34,8 @@ Rollback code with a reviewed revert in ops-shared and redeploy its main revisio
 through the same approval gate. Disable the app webhook to stop event ingress;
 the hourly repair timer must also be stopped if all reconciliation must cease.
 
-`ci/` is the deployment root for shared portfolio infrastructure. Modules live
-under `modules/`; environment values live in `terraform.tfvars`. The initial
+`terraform/ci/` is the deployment root for shared portfolio infrastructure. Modules live
+under `terraform/modules/`; environment values live in `terraform.tfvars`. The initial
 configuration preserves the existing UK South network. The owner-approved
 `functions` subnet adds `10.50.3.0/26`, delegated to `Microsoft.App/environments`
 for Flex Consumption. It is separate from the ACA and private-endpoint subnets.
@@ -87,7 +87,7 @@ preview does not migrate live state or change the deployment engine.
 Deployment validation uses Terraform with `-lockfile=readonly`, matching main;
 the OpenTofu preview alone does not validate the deployment engine's lock file.
 When updating the deployment provider, generate checksums for both CI and local
-development: `terraform -chdir=ci providers lock -platform=linux_amd64 -platform=darwin_arm64`.
+development: `terraform -chdir=terraform/ci providers lock -platform=linux_amd64 -platform=darwin_arm64`.
 Commit the resulting lock file. The Linux PR validation must pass without updating it.
 
 1. `plan` authenticates using GitHub OIDC and the `central-plan` environment.
@@ -150,8 +150,8 @@ restricted permissions; saved Terraform plans and state still contain these valu
 The federated subjects must be:
 
 ```
-repo:ai-platform-portfolio@334196300/terraform-modules@1389557192:environment:central-plan
-repo:ai-platform-portfolio@334196300/terraform-modules@1389557192:environment:central-apply
+repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-plan
+repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-apply
 ```
 
 Issuer: `https://token.actions.githubusercontent.com`; audience:
@@ -163,8 +163,8 @@ plan; a repository merge does not provide that approval.
 
 ### Optional automatic repository enrollment — AI-16
 
-This org enables `ci/onboarding.json`. Before each PR, main and approved apply
-plan, `scripts/discover_federation.py` reads the public org repository inventory
+This org enables `terraform/ci/onboarding.json`. Before each PR, main and approved apply
+plan, `terraform/scripts/discover_federation.py` reads the public org repository inventory
 and expands runner-local Terraform inputs. Every repository gets `central-apply`
 trust even without an Azure workflow; only explicitly configured infrastructure
 repositories receive planning trust. Existing explicit entries preserve their IDs
@@ -219,7 +219,7 @@ the new root's outputs or Azure data sources because those snapshots will not up
    The decommissioned source must not be used to deploy its old configuration.
 2. Download an access-restricted backup of `auth0.tfstate` into `.migration/`.
    Record its ETag and serial. Confirm the destination blob does not exist.
-3. Run `python3 scripts/prepare_network_migration.py .migration/original.tfstate .migration/split`.
+3. Run `python3 terraform/scripts/prepare_network_migration.py .migration/original.tfstate .migration/split`.
    This only edits local copies; it checks preservation of resource attributes,
    distinct state lineages, and unchanged legacy resources/data sources.
 4. Validate a refreshed plan against the prepared network state using a local

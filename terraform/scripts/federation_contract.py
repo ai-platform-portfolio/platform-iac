@@ -49,7 +49,7 @@ def validate_claims(repo, claims):
 
 
 def verify(api):
-    repositories = json.loads(Path("ci/github.auto.tfvars.json").read_text())[
+    repositories = json.loads(Path("terraform/ci/github.auto.tfvars.json").read_text())[
         "github_repositories"
     ]
     current = None

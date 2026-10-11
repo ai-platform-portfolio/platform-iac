@@ -32,10 +32,10 @@ module "deployment_identity" {
   oidc_issuer_url       = "https://token.actions.githubusercontent.com"
   workloads = {
     central-deployment = {
-      federated_subject = local.github_subjects["terraform-modules-plan"]
+      federated_subject = local.github_subjects["platform-iac-plan"]
       extra_federated_subjects = {
-        for key, subject in local.github_subjects : (key == "terraform-modules-apply" ? "apply" : key) => subject
-        if key != "terraform-modules-plan"
+        for key, subject in local.github_subjects : (key == "platform-iac-apply" ? "apply" : key) => subject
+        if key != "platform-iac-plan"
       }
     }
   }

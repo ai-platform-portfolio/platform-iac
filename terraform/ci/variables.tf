@@ -47,8 +47,8 @@ variable "github_repositories" {
     apply_environment = string
   }))
   validation {
-    condition     = try(var.github_repositories["terraform-modules"].plan_environment != null, false) && sum([for repo in values(var.github_repositories) : repo.plan_environment == null ? 1 : 2]) <= 20
-    error_message = "Include terraform-modules with planning trust and stay within the MI's 20-credential limit."
+    condition     = try(var.github_repositories["platform-iac"].plan_environment != null, false) && sum([for repo in values(var.github_repositories) : repo.plan_environment == null ? 1 : 2]) <= 20
+    error_message = "Include platform-iac with planning trust and stay within the MI's 20-credential limit."
   }
   validation {
     condition = alltrue([for repo in values(var.github_repositories) :

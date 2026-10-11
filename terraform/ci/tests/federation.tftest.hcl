@@ -24,10 +24,10 @@ run "github_subject_matches_observed_repository_claim" {
 
   assert {
     condition = local.github_subjects == {
-      ops-shared-plan         = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-plan"
-      ops-shared-apply        = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-apply"
-      terraform-modules-plan  = "repo:ai-platform-portfolio@334196300/terraform-modules@1389557192:environment:central-plan"
-      terraform-modules-apply = "repo:ai-platform-portfolio@334196300/terraform-modules@1389557192:environment:central-apply"
+      ops-shared-plan    = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-plan"
+      ops-shared-apply   = "repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-apply"
+      platform-iac-plan  = "repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-plan"
+      platform-iac-apply = "repo:ai-platform-portfolio@334196300/platform-iac@1389557192:environment:central-apply"
     }
     error_message = "Only the two infrastructure repositories may plan the central estate; every other repository is apply-only."
   }
@@ -38,8 +38,8 @@ run "another_repository_reuses_the_identity" {
 
   variables {
     github_repositories = {
-      terraform-modules = {
-        owner = "example", owner_id = "123", name = "terraform-modules", repository_id = "456", plan_environment = "central-plan", apply_environment = "central-apply"
+      platform-iac = {
+        owner = "example", owner_id = "123", name = "platform-iac", repository_id = "456", plan_environment = "central-plan", apply_environment = "central-apply"
       }
       workload = {
         owner = "example", owner_id = "123", name = "workload", repository_id = "789", plan_environment = "plan", apply_environment = "deploy"

@@ -39,9 +39,9 @@ def read_json(command):
 
 
 def main():
-    repo = json.loads(Path("ci/github.auto.tfvars.json").read_text())[
+    repo = json.loads(Path("terraform/ci/github.auto.tfvars.json").read_text())[
         "github_repositories"
-    ]["terraform-modules"]
+    ]["platform-iac"]
     try:
         environment = read_json(
             [
@@ -51,7 +51,7 @@ def main():
             ]
         )
         client_id = read_json(
-            ["terraform", "-chdir=ci", "output", "-json", "deployment_client_id"]
+            ["terraform", "-chdir=terraform/ci", "output", "-json", "deployment_client_id"]
         )
         identities = read_json(["az", "identity", "list", "--output", "json"])
         matches = [item for item in identities if item.get("clientId") == client_id]
@@ -74,7 +74,7 @@ def main():
         )
     except (OSError, subprocess.CalledProcessError, ValueError):
         print(
-            "Preflight could not read deployment configuration. Check the initialized ci backend, gh and az login, and active Azure subscription."
+            "Preflight could not read deployment configuration. Check the initialized terraform/ci backend, gh and az login, and active Azure subscription."
         )
         return 1
     errors = problems(repo, environment, credentials)
