@@ -35,7 +35,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - id: standards
-        uses: ai-platform-portfolio/engineering-standards@11fa9212afd74b9e4e15f578a14c5e6cfc105798
+        uses: ai-platform-portfolio/engineering-standards@e26253f901e44fb15a5999bfa54f4e046e1009a9
       - name: Enforce module structure and comment policy
         env:
           CHECKER: ${{ steps.standards.outputs.checker }}
