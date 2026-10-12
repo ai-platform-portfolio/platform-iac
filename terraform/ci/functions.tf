@@ -30,7 +30,7 @@ module "functions" {
   }
 }
 
-# Only read/create/update credentials on the central identity; no delete or RBAC writes.
+# Credential lifecycle access on the central identity only; no RBAC writes.
 resource "azurerm_role_definition" "onboarding" {
   name              = "ai-platform-repository-onboarding"
   scope             = azurerm_resource_group.deployment.id
@@ -40,6 +40,7 @@ resource "azurerm_role_definition" "onboarding" {
       "Microsoft.ManagedIdentity/userAssignedIdentities/read",
       "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials/read",
       "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials/write",
+      "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials/delete",
     ]
   }
 }
