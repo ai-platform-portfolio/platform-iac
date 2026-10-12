@@ -8,11 +8,8 @@ on:
       - 'terraform/modules/**'
       - 'terraform/scripts/deployment_plan.py'
       - 'terraform/scripts/federation_contract.py'
-      - 'terraform/scripts/discover_federation.py'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
-  repository_dispatch:
-    types: [repository-onboarding]
 
 permissions:
   contents: read
@@ -72,7 +69,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python3 terraform/scripts/discover_federation.py
           python3 terraform/scripts/federation_contract.py
       - run: >-
           terraform -chdir=terraform/ci init -input=false -lockfile=readonly -backend-config=backend.hcl

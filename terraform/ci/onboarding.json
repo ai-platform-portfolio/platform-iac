@@ -1,6 +1,0 @@
-{
-  "enabled": true,
-  "organization": "ai-platform-portfolio",
-  "apply_environment": "central-apply",
-  "plan_environment": "central-plan"
-}

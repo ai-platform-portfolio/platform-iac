@@ -48,7 +48,7 @@ run "another_repository_reuses_the_identity" {
   }
 
   assert {
-    condition     = length(local.github_subjects) == 4 && length(module.deployment_identity.workloads) == 1 && local.github_subjects["workload-plan"] == "repo:example@123/workload@789:environment:plan" && local.github_subjects["workload-apply"] == "repo:example@123/workload@789:environment:deploy"
+    condition     = length(local.github_subjects) == 4 && length(azurerm_user_assigned_identity.deployment) == 1 && local.github_subjects["workload-plan"] == "repo:example@123/workload@789:environment:plan" && local.github_subjects["workload-apply"] == "repo:example@123/workload@789:environment:deploy"
     error_message = "Adding a repository must add exactly two subjects without adding another managed identity."
   }
 }
