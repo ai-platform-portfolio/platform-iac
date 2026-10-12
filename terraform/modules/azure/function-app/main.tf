@@ -90,8 +90,10 @@ resource "azurerm_function_app_flex_consumption" "this" {
     AzureWebJobsStorage              = ""
     AZURE_CLIENT_ID                  = azurerm_user_assigned_identity.this.client_id
     AzureWebJobsStorage__accountName = var.storage.name
-    AzureWebJobsStorage__credential  = "managedidentity"
-    AzureWebJobsStorage__clientId    = azurerm_user_assigned_identity.this.client_id
+    # Queue bindings need an explicit service URI; accountName is host-specific.
+    AzureWebJobsStorage__queueServiceUri = coalesce(var.storage.queue_endpoint, replace(var.storage.blob_endpoint, ".blob.", ".queue."))
+    AzureWebJobsStorage__credential      = "managedidentity"
+    AzureWebJobsStorage__clientId        = azurerm_user_assigned_identity.this.client_id
   })
 
   site_config {

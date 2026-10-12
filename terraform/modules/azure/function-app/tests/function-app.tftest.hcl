@@ -47,6 +47,7 @@ run "runtime_access_excludes_state_and_uses_the_approved_network" {
   assert {
     condition = (
       azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage"] == "" &&
+      azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage__queueServiceUri"] == "https://fixturestorage.queue.core.windows.net/" &&
       azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage__credential"] == "managedidentity" &&
       azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage__accountName"] == var.storage.name &&
       azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage__clientId"] == azurerm_user_assigned_identity.this.client_id
