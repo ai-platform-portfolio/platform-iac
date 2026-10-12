@@ -85,6 +85,9 @@ resource "azurerm_function_app_flex_consumption" "this" {
   }
 
   app_settings = merge(var.app_settings, {
+    WorkQueue__serviceUri = coalesce(var.storage.queue_endpoint, replace(var.storage.blob_endpoint, ".blob.", ".queue."))
+    WorkQueue__credential = "managedidentity"
+    WorkQueue__clientId   = azurerm_user_assigned_identity.this.client_id
     # Prevent AzureRM from injecting a connection string with an empty account key.
     # https://github.com/hashicorp/terraform-provider-azurerm/issues/29149
     AzureWebJobsStorage              = ""
