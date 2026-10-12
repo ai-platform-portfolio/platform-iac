@@ -85,6 +85,9 @@ resource "azurerm_function_app_flex_consumption" "this" {
   }
 
   app_settings = merge(var.app_settings, {
+    # Prevent AzureRM from injecting a connection string with an empty account key.
+    # https://github.com/hashicorp/terraform-provider-azurerm/issues/29149
+    AzureWebJobsStorage              = ""
     AZURE_CLIENT_ID                  = azurerm_user_assigned_identity.this.client_id
     AzureWebJobsStorage__accountName = var.storage.name
     AzureWebJobsStorage__credential  = "managedidentity"

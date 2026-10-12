@@ -1,4 +1,12 @@
-mock_provider "azurerm" {}
+mock_provider "azurerm" {
+  mock_resource "azurerm_user_assigned_identity" {
+    defaults = {
+      id        = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/fixture-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/fixture-function-runtime"
+      client_id = "00000000-0000-0000-0000-000000000001"
+    }
+    override_during = plan
+  }
+}
 
 variables {
   name                = "fixture-function"
@@ -35,5 +43,14 @@ run "runtime_access_excludes_state_and_uses_the_approved_network" {
   assert {
     condition     = azurerm_function_app_flex_consumption.this.storage_authentication_type == "UserAssignedIdentity"
     error_message = "Storage keys must not be used for Function authentication."
+  }
+  assert {
+    condition = (
+      azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage"] == "" &&
+      azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage__credential"] == "managedidentity" &&
+      azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage__accountName"] == var.storage.name &&
+      azurerm_function_app_flex_consumption.this.app_settings["AzureWebJobsStorage__clientId"] == azurerm_user_assigned_identity.this.client_id
+    )
+    error_message = "Host storage must use managed identity without an overriding key-based connection string."
   }
 }
