@@ -55,6 +55,5 @@ jobs:
           tofu_wrapper: false
       - name: Plan and update PR preview
         run: |
-          python3 terraform/scripts/discover_federation.py
           cp terraform/ci/opentofu.lock.hcl terraform/ci/.terraform.lock.hcl
           python3 terraform/scripts/plan_preview.py

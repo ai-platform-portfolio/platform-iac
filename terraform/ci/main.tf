@@ -22,28 +22,44 @@ locals {
   ]...)
 }
 
-module "deployment_identity" {
-  source = "../modules/azure/identity"
+# Keep the identity and RBAC in Terraform; ops-shared owns GitHub credentials.
+resource "azurerm_resource_group" "deployment" {
+  name     = var.deployment_identity.resource_group_name
+  location = var.deployment_identity.location
+}
 
-  create_resource_group = true
-  resource_group_name   = var.deployment_identity.resource_group_name
-  location              = var.deployment_identity.location
-  name_prefix           = var.deployment_identity.name_prefix
-  oidc_issuer_url       = "https://token.actions.githubusercontent.com"
-  workloads = {
-    central-deployment = {
-      federated_subject = local.github_subjects["platform-iac-plan"]
-      extra_federated_subjects = {
-        for key, subject in local.github_subjects : (key == "platform-iac-apply" ? "apply" : key) => subject
-        if key != "platform-iac-plan"
-      }
-    }
-  }
-  role_assignments = {
-    for key, role in var.deployment_identity.roles : key => {
-      workload             = "central-deployment"
-      scope                = key == "state" ? var.state_container_scope : "${data.azurerm_subscription.current.id}${role.scope_suffix}"
-      role_definition_name = role.role_definition_name
-    }
-  }
+resource "azurerm_user_assigned_identity" "deployment" {
+  for_each            = toset(["central-deployment"])
+  name                = "${var.deployment_identity.name_prefix}-${each.key}"
+  resource_group_name = azurerm_resource_group.deployment.name
+  location            = var.deployment_identity.location
+}
+
+resource "azurerm_role_assignment" "deployment" {
+  for_each             = var.deployment_identity.roles
+  scope                = each.key == "state" ? var.state_container_scope : "${data.azurerm_subscription.current.id}${each.value.scope_suffix}"
+  role_definition_name = each.value.role_definition_name
+  principal_id         = azurerm_user_assigned_identity.deployment["central-deployment"].principal_id
+  principal_type       = "ServicePrincipal"
+}
+
+moved {
+  from = module.deployment_identity.azurerm_resource_group.this[0]
+  to   = azurerm_resource_group.deployment
+}
+moved {
+  from = module.deployment_identity.azurerm_user_assigned_identity.this
+  to   = azurerm_user_assigned_identity.deployment
+}
+moved {
+  from = module.deployment_identity.azurerm_role_assignment.this
+  to   = azurerm_role_assignment.deployment
+}
+removed {
+  from = module.deployment_identity.azurerm_federated_identity_credential.this
+  lifecycle { destroy = false }
+}
+removed {
+  from = module.deployment_identity.azurerm_federated_identity_credential.extra
+  lifecycle { destroy = false }
 }

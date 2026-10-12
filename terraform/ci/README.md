@@ -116,7 +116,7 @@ is independent of this queue and runs fresh on every relevant main push.
 
 ### Azure bootstrap
 
-GitHub environments are configured. `module.deployment_identity` creates
+GitHub environments are configured. the central identity resources create
 `ai-platform-central-deployment` in `ai-platform-ci-rg`, with an apply credential
 per repository and optional planning trust. Adding repositories extends the map,
 not the MI count. The control repository retains its existing credential addresses.
@@ -161,30 +161,19 @@ the sandbox. Keep the apply environment's required reviewer and main-only policy
 Azure federation provisioning requires an owner-approved Terraform bootstrap
 plan; a repository merge does not provide that approval.
 
-### Optional automatic repository enrollment — AI-16
+### Automatic repository enrollment — AI-45
 
-This org enables `terraform/ci/onboarding.json`. Before each PR, main and approved apply
-plan, `terraform/scripts/discover_federation.py` reads the public org repository inventory
-and expands runner-local Terraform inputs. Every discovered public repository gets `central-apply` and `central-plan` trust
-from the environment defaults in `onboarding.json`, even before it has an Azure
-workflow. The same expansion backfills planning trust for previously enrolled
-apply-only repositories. Explicit entries preserve their IDs, names and custom
-planning environments; an explicit `plan_environment: null` opts that repository
-out of planning trust. Omitting `plan_environment` from the onboarding policy
-retains apply-only discovery. Missing/disabled enrollment configuration opts out;
-nothing is installed downstream.
-Discovery is limited to public repositories, matching the org's public portfolio policy.
-Planning credentials use the existing sandbox Owner identity; this expands its
-planning trust to those repositories. Their PR workflows and planning environments
-remain repository-owned. Discovery checks the MI's 20-credential capacity after
-adding both phases and fails rather than silently skipping repositories.
+The ops-shared Function processes signed GitHub repository-creation events and
+applies per-repository settings and public-repository environment credentials
+directly with managed identity. Terraform retains the central identity and RBAC,
+but no longer discovers repositories or owns their credentials.
 
-The authenticated webhook's optional `AUTO_ENROLL_REPOSITORIES` setting sends a
-`repository-onboarding` dispatch to this repository. That event runs a fresh plan
-but skips apply. The owner initiates the normal CI deployment and approves its
-fresh plan; changed inventory after review invalidates its fingerprint. No webhook
-or local hook executes Azure writes. Disabling enrollment can propose removal of
-previously discovered trust; review that plan before applying.
+Apply the ownership handoff before deploying the Function. The reviewed plan must
+move the identity, resource group and role assignments without replacement and
+forget credentials without deleting them (`destroy = false`). Existing GitHub
+OIDC subjects remain unchanged. New trust still requires repository-owned
+`central-plan` and `central-apply` environments, with their existing approval
+requirements. There is no per-branch or PR-context credential.
 
 Ops-shared's explicit subject is
 `repo:ai-platform-portfolio@334196300/ops-shared@1389842744:environment:central-apply`.
@@ -245,3 +234,12 @@ blindly overwrite a state that has changed. Never use `state push -force` as a s
 
 No migration command is run in CI. Never attach state files or saved plans to
 PRs or workflow artifacts. Backend-free validation and mocked tests need no secrets.
+
+### Repository onboarding ownership
+
+The ops-shared Azure Function now owns GitHub federated credentials and
+per-repository settings. This root retains the shared identity and its RBAC.
+The migration uses `moved` blocks for those resources and `removed` blocks with
+`destroy = false` for credentials, preserving all existing trust in Azure.
+Apply this migration before deploying the onboarding Function. Public repository
+discovery is disabled here; do not re-enable it or re-import the credentials.

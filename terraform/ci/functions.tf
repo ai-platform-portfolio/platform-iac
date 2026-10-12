@@ -19,7 +19,8 @@ module "functions" {
   queues                 = each.value.queues
   create_host_containers = each.value.create_host_containers
   app_settings = merge(each.value.settings, {
-    KEY_VAULT_URL = "https://${var.function_vault.name}.vault.azure.net/"
+    FEDERATION_IDENTITY_ID = azurerm_user_assigned_identity.deployment["central-deployment"].id
+    KEY_VAULT_URL          = "https://${var.function_vault.name}.vault.azure.net/"
   })
   role_assignments = {
     for name in each.value.secret_names : name => {
@@ -27,4 +28,25 @@ module "functions" {
       role  = "Key Vault Secrets User"
     }
   }
+}
+
+# Only read/create/update credentials on the central identity; no delete or RBAC writes.
+resource "azurerm_role_definition" "onboarding" {
+  name              = "ai-platform-repository-onboarding"
+  scope             = azurerm_resource_group.deployment.id
+  assignable_scopes = [azurerm_resource_group.deployment.id]
+  permissions {
+    actions = [
+      "Microsoft.ManagedIdentity/userAssignedIdentities/read",
+      "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials/read",
+      "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials/write",
+    ]
+  }
+}
+resource "azurerm_role_assignment" "onboarding" {
+  for_each           = module.functions
+  scope              = azurerm_user_assigned_identity.deployment["central-deployment"].id
+  role_definition_id = azurerm_role_definition.onboarding.role_definition_resource_id
+  principal_id       = each.value.principal_id
+  principal_type     = "ServicePrincipal"
 }
