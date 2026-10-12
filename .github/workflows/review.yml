@@ -22,8 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          repository: ai-platform-portfolio/engineering-standards
-          ref: c258a365fe6e7355b425ed0f46b980d8f5806cff
+          repository: ai-platform-portfolio/ops-shared
+          ref: 1fed64e499ded036d31c11e2a8189ef9268329f3
           persist-credentials: false
       - name: Refresh the original PR structure result
         env:
