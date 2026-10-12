@@ -70,8 +70,8 @@ The required `infrastructure-plan-required` check succeeds only when the plan
 job succeeds. Failed, cancelled and skipped plans block merging, including fork
 PRs without access to the planning identity. Move an approved fork change to a
 trusted same-repository branch to run its plan. Repository controls and public
-visibility are checked by the shared
-[portfolio governance audit](https://github.com/ai-platform-portfolio/engineering-standards#ci-and-enforcement-status).
+visibility are enforced by the repository rules and workflow checks documented
+in this repository.
 
 The PR job updates one bot comment with its head commit and collapsible plan.
 Initialization or authentication errors post a failed preview and fail the check.

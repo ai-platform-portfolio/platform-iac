@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: ai-platform-portfolio/engineering-standards/actions/workflow-lint@64a2a047e5fdb25c8d63bd6da2e1f1556776a930
+      - uses: ai-platform-portfolio/ops-shared/actions/workflow-lint@1fed64e499ded036d31c11e2a8189ef9268329f3
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +35,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - id: standards
-        uses: ai-platform-portfolio/engineering-standards@e26253f901e44fb15a5999bfa54f4e046e1009a9
+        uses: ai-platform-portfolio/ops-shared/actions/engineering-checks@1fed64e499ded036d31c11e2a8189ef9268329f3
       - name: Enforce module structure and comment policy
         env:
           CHECKER: ${{ steps.standards.outputs.checker }}
