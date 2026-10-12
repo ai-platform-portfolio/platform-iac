@@ -6,7 +6,7 @@ variable "subnet_id" {
   type        = string
 }
 variable "storage" {
-  type      = object({ id = string, name = string, blob_endpoint = string })
+  type      = object({ id = string, name = string, blob_endpoint = string, queue_endpoint = optional(string) })
   sensitive = true
 }
 variable "app_settings" {

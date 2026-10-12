@@ -12,9 +12,10 @@ module "functions" {
   location            = var.deployment_identity.location
   subnet_id           = module.network.subnet_ids["functions"]
   storage = {
-    id            = data.azurerm_storage_account.functions.id
-    name          = data.azurerm_storage_account.functions.name
-    blob_endpoint = data.azurerm_storage_account.functions.primary_blob_endpoint
+    id             = data.azurerm_storage_account.functions.id
+    name           = data.azurerm_storage_account.functions.name
+    blob_endpoint  = data.azurerm_storage_account.functions.primary_blob_endpoint
+    queue_endpoint = data.azurerm_storage_account.functions.primary_queue_endpoint
   }
   queues                 = each.value.queues
   create_host_containers = each.value.create_host_containers
